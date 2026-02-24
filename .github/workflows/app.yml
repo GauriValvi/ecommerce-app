@@ -17,15 +17,16 @@ jobs:
 
       - name: Login to ECR
         run: |
-          aws ecr get-login-password --region us-east-1 \
-          | docker login --username AWS --password-stdin <account-id>.dkr.ecr.us-east-1.amazonaws.com
+          aws ecr get-login-password --region us-east-1 
+          | docker login --username AWS --password-stdin 376129867238.dkr.ecr.us-east-1.amazonaws.com
 
       - name: Push image
         run: |
-          docker tag ecommerce:${{ github.sha }} <account-id>.dkr.ecr.us-east-1.amazonaws.com/ecommerce:${{ github.sha }}
-          docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/ecommerce:${{ github.sha }}
+          docker tag ecommerce:${{ github.sha }} 376129867238.dkr.ecr.us-east-1.amazonaws.com/ecommerce:${{ github.sha }}
+          docker push 376129867238.dkr.ecr.us-east-1.amazonaws.com/ecommerce:${{ github.sha }}
 
       - name: Trigger ASG refresh
         run: |
           aws autoscaling start-instance-refresh \
+
           --auto-scaling-group-name ecommerce-asg
