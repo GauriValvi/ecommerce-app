@@ -24,7 +24,7 @@ jobs:
           aws-region: us-east-1
 
       - name: Build Docker image
-        run: docker build -t ecommerce:${{ github.sha }} .
+        run: docker build -t ecommerce-app:${{ github.sha }} .
 
       - name: Login to ECR
         run: |
@@ -40,4 +40,5 @@ jobs:
         run: |
           aws autoscaling start-instance-refresh \
             --auto-scaling-group-name ecommerce-asg
+
 
