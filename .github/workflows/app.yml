@@ -14,32 +14,40 @@ jobs:
       contents: read
 
     steps:
+      # Checkout the repo
       - uses: actions/checkout@v3
 
-      # ✅ Configure AWS credentials (OIDC - recommended)
+      # Configure AWS credentials using OIDC
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::376129867238:role/github-actions-role
           aws-region: us-east-1
 
+      # Login to ECR
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region us-east-1 \
+          | docker login --username AWS --password-stdin 376129867238.dkr.ecr.us-east-1.amazonaws.com
+
+      # Build Docker image
       - name: Build Docker image
         run: |
           docker build -t ecommerce-app:${{ github.sha }} .
 
+      # Tag image for ECR
       - name: Tag image for ECR
         run: |
           docker tag ecommerce-app:${{ github.sha }} \
           376129867238.dkr.ecr.us-east-1.amazonaws.com/ecommerce-app:${{ github.sha }}
 
-      - name: Push image
+      # Push Docker image to ECR
+      - name: Push image to ECR
         run: |
           docker push 376129867238.dkr.ecr.us-east-1.amazonaws.com/ecommerce-app:${{ github.sha }}
 
+      # Trigger Auto Scaling Group refresh
       - name: Trigger ASG refresh
         run: |
           aws autoscaling start-instance-refresh \
             --auto-scaling-group-name ecommerce-asg
-
-
-
