@@ -50,4 +50,5 @@ jobs:
       - name: Trigger ASG refresh
         run: |
           aws autoscaling start-instance-refresh \
-            --auto-scaling-group-name ecommerce-asg
+              --auto-scaling-group-name terraform-20260224164242658500000010
+
