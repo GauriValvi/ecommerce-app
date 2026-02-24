@@ -33,10 +33,11 @@ jobs:
 
       - name: Push image
         run: |
-          docker tag ecommerce:${{ github.sha }} 376129867238.dkr.ecr.us-east-1.amazonaws.com/ecommerce:${{ github.sha }}
-          docker push 376129867238.dkr.ecr.us-east-1.amazonaws.com/ecommerce:${{ github.sha }}
+          docker tag ecommerce:${{ github.sha }} 376129867238.dkr.ecr.us-east-1.amazonaws.com/ecommerce-app:${{ github.sha }}
+          docker push 376129867238.dkr.ecr.us-east-1.amazonaws.com/ecommerce-app:${{ github.sha }}
 
       - name: Trigger ASG refresh
         run: |
           aws autoscaling start-instance-refresh \
             --auto-scaling-group-name ecommerce-asg
+
