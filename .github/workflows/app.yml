@@ -1,0 +1,31 @@
+name: Build and Deploy App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t ecommerce:${{ github.sha }} .
+
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password --region us-east-1 \
+          | docker login --username AWS --password-stdin <account-id>.dkr.ecr.us-east-1.amazonaws.com
+
+      - name: Push image
+        run: |
+          docker tag ecommerce:${{ github.sha }} <account-id>.dkr.ecr.us-east-1.amazonaws.com/ecommerce:${{ github.sha }}
+          docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/ecommerce:${{ github.sha }}
+
+      - name: Trigger ASG refresh
+        run: |
+          aws autoscaling start-instance-refresh \
+          --auto-scaling-group-name ecommerce-asg
