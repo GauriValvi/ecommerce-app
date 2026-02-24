@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "E-Commerce App Running"
+    return "A well-running e-commerce app delivers a smooth user experience with fast navigation, personalized recommendations, and clear product information. It relies on secure payments, real-time inventory updates, and reliable backend infrastructure to handle traffic and orders. Features like order tracking, notifications, and analytics improve engagement and business decisions, while strong security and compliance protect user data. Continuous performance monitoring and updates ensure the app stays efficient, trustworthy, and competitive."
 
 @app.route("/health")
 def health():
