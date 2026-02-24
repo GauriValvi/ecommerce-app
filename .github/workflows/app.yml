@@ -1,5 +1,3 @@
-name: Build and Deploy App
-
 on:
   push:
     branches:
@@ -46,9 +44,20 @@ jobs:
         run: |
           docker push 376129867238.dkr.ecr.us-east-1.amazonaws.com/ecommerce-app:${{ github.sha }}
 
+      # Wait for any ongoing instance refresh to finish
+      - name: Wait for previous ASG refresh
+        run: |
+          ASG_NAME="terraform-20260224164242658500000010"
+          while aws autoscaling describe-instance-refreshes \
+                  --auto-scaling-group-name $ASG_NAME \
+                  --query 'InstanceRefreshes[?Status==`InProgress`]' \
+                  | grep -q .; do
+              echo "Instance refresh in progress, waiting 60 seconds..."
+              sleep 60
+          done
+
       # Trigger Auto Scaling Group refresh
       - name: Trigger ASG refresh
         run: |
           aws autoscaling start-instance-refresh \
               --auto-scaling-group-name terraform-20260224164242658500000010
-
