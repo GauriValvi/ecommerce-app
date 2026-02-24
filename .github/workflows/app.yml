@@ -9,15 +9,26 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - uses: actions/checkout@v3
+
+      # ✅ Configure AWS credentials (OIDC - recommended)
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::376129867238:role/github-actions-role
+          aws-region: us-east-1
 
       - name: Build Docker image
         run: docker build -t ecommerce:${{ github.sha }} .
 
       - name: Login to ECR
         run: |
-          aws ecr get-login-password --region us-east-1 
+          aws ecr get-login-password --region us-east-1 \
           | docker login --username AWS --password-stdin 376129867238.dkr.ecr.us-east-1.amazonaws.com
 
       - name: Push image
@@ -28,5 +39,4 @@ jobs:
       - name: Trigger ASG refresh
         run: |
           aws autoscaling start-instance-refresh \
-
-          --auto-scaling-group-name ecommerce-asg
+            --auto-scaling-group-name ecommerce-asg
